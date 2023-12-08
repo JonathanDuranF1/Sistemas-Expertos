@@ -1,0 +1,91 @@
+import os
+import json
+
+class SistemaInterferencia:
+    def __init__(self):
+        self.datos = self.cargar_datos()
+
+    def cargar_datos(self):
+        if os.path.exists("datos.json"):
+            with open("datos.json", "r") as archivo:
+                return json.load(archivo)
+        else:
+            return {}
+
+    def guardar_datos(self):
+        with open("datos.json", "w") as archivo:
+            json.dump(self.datos, archivo)
+
+    def mostrar_palabras_aprendidas(self):
+        if not self.datos:
+            print("\nNo hay palabras aprendidas.")
+        else:
+            print("\nPalabras aprendidas:")
+            for palabra, respuesta in self.datos.items():
+                print(f"{palabra.capitalize()}: {respuesta}")
+
+    def borrar_palabra(self, palabra):
+        if palabra.lower() in self.datos:
+            del self.datos[palabra.lower()]
+            self.guardar_datos()
+            print(f"\nLa palabra '{palabra}' ha sido borrada.")
+        else:
+            print(f"\nLa palabra '{palabra}' no existe en las aprendidas.")
+
+    def limpiar_palabras(self):
+        if self.datos:
+            confirmacion = input("\n¿Estás seguro de que quieres borrar todas las palabras aprendidas? (s/n): ")
+            if confirmacion.lower() == 's':
+                self.datos.clear()
+                self.guardar_datos()
+                print("Todas las palabras aprendidas han sido borradas.")
+        else:
+            print("\nNo hay palabras aprendidas para borrar.")
+
+    def sistema_interferencia(self, palabra):
+        palabra_lower = palabra.lower()
+
+        if palabra_lower == "hola":
+            respuesta = "¡Hola! ¿Cómo estás?"
+        elif palabra_lower == "adios":
+            respuesta = "¡Hasta luego! Que tengas un buen día."
+        else:
+            respuesta = "No entiendo esa palabra."
+
+        # Aprendizaje: almacenar nueva palabra y respuesta
+        self.datos[palabra_lower] = respuesta
+        self.guardar_datos()
+
+        return respuesta
+
+def main():
+    sistema = SistemaInterferencia()
+
+    while True:
+        print("\nOpciones:")
+        print("1. Ingresar palabra")
+        print("2. Mostrar palabras aprendidas")
+        print("3. Borrar palabra")
+        print("4. Limpiar todas las palabras aprendidas")
+        print("5. Salir")
+
+        opcion = input("Selecciona una opción (1-5): ")
+
+        if opcion == '1':
+            entrada_usuario = input("Escribe una palabra: ")
+            resultado = sistema.sistema_interferencia(entrada_usuario)
+            print(resultado)
+        elif opcion == '2':
+            sistema.mostrar_palabras_aprendidas()
+        elif opcion == '3':
+            palabra_borrar = input("Ingresa la palabra que quieres borrar: ")
+            sistema.borrar_palabra(palabra_borrar)
+        elif opcion == '4':
+            sistema.limpiar_palabras()
+        elif opcion == '5':
+            break
+        else:
+            print("Opción no válida. Inténtalo de nuevo.")
+
+if __name__ == "__main__":
+    main()
